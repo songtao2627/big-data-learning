@@ -1,0 +1,36 @@
+{
+  "enabled": true,
+  "name": "合并冲突解决助手",
+  "description": "帮助识别和解决 Git 合并冲突",
+  "triggers": [
+    {
+      "type": "file_save",
+      "patterns": ["**/*"],
+      "condition": "has_merge_conflicts",
+      "description": "当检测到合并冲突时自动触发"
+    },
+    {
+      "type": "manual",
+      "name": "解决合并冲突",
+      "description": "手动启动合并冲突解决流程"
+    }
+  ],
+  "actions": [
+    {
+      "name": "分析合并冲突",
+      "prompt": "分析当前的合并冲突：\n1. 识别所有有冲突的文件\n2. 分析冲突的性质（代码冲突、格式冲突等）\n3. 提供解决建议\n4. 如果可能，自动解决简单的冲突\n5. 对于复杂冲突，提供详细的手动解决指导\n\n重点关注：\n- 保持代码功能完整性\n- 遵循项目编码规范\n- 避免引入新的错误",
+      "context": ["#Git Diff", "#Codebase", "#Problems"]
+    },
+    {
+      "name": "验证冲突解决",
+      "prompt": "验证合并冲突解决结果：\n1. 检查所有冲突标记是否已清除\n2. 验证代码语法正确性\n3. 运行基本测试（如果存在）\n4. 确认合并后的代码逻辑正确\n5. 建议合并提交信息\n\n只有在确认所有问题都已解决后才建议完成合并。",
+      "context": ["#Codebase", "#Terminal", "#Problems"]
+    }
+  ],
+  "settings": {
+    "auto_resolve_simple": false,
+    "backup_before_resolve": true,
+    "run_tests_after_resolve": true,
+    "conflict_markers": ["<<<<<<<", "=======", ">>>>>>>"]
+  }
+}
