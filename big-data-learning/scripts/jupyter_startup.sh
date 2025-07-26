@@ -97,3 +97,6 @@ spark.stop()
 EOL
 
 echo "Jupyter环境配置完成！"
+
+# 启动Jupyter Notebook
+exec start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_root=True

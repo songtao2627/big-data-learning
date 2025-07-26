@@ -26,9 +26,8 @@ services:
     user: root
     command: >
       bash -c "chmod +x /usr/local/bin/jupyter_startup.sh &&
-               /usr/local/bin/jupyter_startup.sh &&
                chown -R jovyan:users /home/jovyan &&
-               su jovyan -c 'start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_root=True'"
+               su jovyan -c '/usr/local/bin/jupyter_startup.sh'"
     networks:
       - spark-network
     depends_on:
