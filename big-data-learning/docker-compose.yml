@@ -15,9 +15,10 @@ services:
       - ./notebooks/pyspark_config.py:/home/jovyan/work/pyspark_config.py
     environment:
       - JUPYTER_ENABLE_LAB=yes
+      - SPARK_HOME=/usr/local/spark
       - SPARK_MASTER=spark://spark-master:7077
       - PYSPARK_SUBMIT_ARGS=--master spark://spark-master:7077 --conf spark.sql.adaptive.enabled=true --conf spark.sql.adaptive.coalescePartitions.enabled=true pyspark-shell
-      - PYTHONPATH=/home/jovyan/work
+      - PYTHONPATH=/usr/local/spark/python:/home/jovyan/work
       - PYSPARK_PYTHON=/opt/conda/bin/python
       - PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
       - SPARK_DRIVER_MEMORY=1g

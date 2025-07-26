@@ -61,17 +61,54 @@ pip uninstall pyspark -y
 python -c "import pyspark" 2>&1 || echo "PySpark 已成功卸载"
 ```
 
-### 步骤4：安装匹配版本的 PySpark
+### 步骤4：配置国内镜像源（提升下载速度）
 
 ```bash
-# 安装与集群匹配的 PySpark 版本
+# 创建 pip 配置目录
+mkdir -p ~/.pip
+
+# 配置国内镜像源
+cat > ~/.pip/pip.conf << 'EOF'
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+trusted-host = pypi.tuna.tsinghua.edu.cn
+timeout = 120
+EOF
+
+# 验证配置
+cat ~/.pip/pip.conf
+
+# 测试镜像源速度
+pip install --dry-run pyspark==3.4.3
+```
+
+**学习要点**：
+- `index-url`: 指定包索引地址
+- `trusted-host`: 信任的主机，避免 SSL 验证问题
+- `timeout`: 设置超时时间，防止网络问题导致安装失败
+
+**常用国内镜像源**：
+- 清华大学：`https://pypi.tuna.tsinghua.edu.cn/simple`
+- 阿里云：`https://mirrors.aliyun.com/pypi/simple/`
+- 中科大：`https://pypi.mirrors.ustc.edu.cn/simple/`
+- 豆瓣：`https://pypi.douban.com/simple/`
+
+**临时使用镜像源**（不修改配置文件）：
+```bash
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyspark==3.4.3
+```
+
+### 步骤5：安装匹配版本的 PySpark
+
+```bash
+# 现在使用国内镜像安装 PySpark（速度会快很多）
 pip install pyspark==3.4.3
 
 # 验证安装
 python -c "import pyspark; print('PySpark version:', pyspark.__version__)"
 ```
 
-### 步骤5：安装辅助工具
+### 步骤6：安装辅助工具
 
 ```bash
 # 安装有用的辅助库
@@ -80,7 +117,7 @@ pip install findspark pyarrow
 # findspark 可以帮助自动找到 Spark 安装位置
 ```
 
-### 步骤6：配置环境变量
+### 步骤7：配置环境变量
 
 ```bash
 # 设置环境变量（临时）
@@ -92,7 +129,7 @@ echo "SPARK_HOME: $SPARK_HOME"
 echo "PYTHONPATH: $PYTHONPATH"
 ```
 
-### 步骤7：测试本地模式
+### 步骤8：测试本地模式
 
 创建一个测试脚本：
 
@@ -129,7 +166,7 @@ EOF
 python test_local_spark.py
 ```
 
-### 步骤8：测试集群连接
+### 步骤9：测试集群连接
 
 ```bash
 # 创建集群连接测试
