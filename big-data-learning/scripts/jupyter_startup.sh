@@ -2,7 +2,7 @@
 # Jupyter启动脚本 - 安装额外的Python库和配置
 
 # 安装额外的Python库
-pip install --no-cache-dir \
+/opt/conda/bin/pip install --no-cache-dir \
     pyspark==3.4.0 \
     findspark \
     pyarrow \
@@ -99,4 +99,4 @@ EOL
 echo "Jupyter环境配置完成！"
 
 # 启动Jupyter Notebook
-exec start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_root=True
+exec /opt/conda/bin/start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_root=True
