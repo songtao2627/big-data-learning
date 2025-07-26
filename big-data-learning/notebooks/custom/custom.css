@@ -1,0 +1,29 @@
+/* 自定义Jupyter样式 */
+.jp-Notebook {
+    font-family: 'Source Han Sans CN', sans-serif;
+}
+
+.jp-MarkdownCell {
+    font-size: 16px;
+}
+
+.jp-CodeCell {
+    font-size: 14px;
+}
+
+/* 代码单元格样式 */
+.jp-CodeMirrorEditor {
+    border-left: 3px solid #2196F3;
+    padding-left: 5px;
+}
+
+/* 输出单元格样式 */
+.jp-OutputArea-output {
+    border-left: 3px solid #4CAF50;
+    padding-left: 5px;
+}
+
+/* 错误输出样式 */
+.jp-OutputArea-output.jp-OutputArea-executeResult.jp-RenderedText[data-mime-type="application/vnd.jupyter.stderr"] {
+    border-left: 3px solid #F44336;
+}

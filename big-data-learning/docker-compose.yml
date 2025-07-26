@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   jupyter:
@@ -13,7 +12,7 @@ services:
       - ./scripts/jupyter_notebook_config.py:/home/jovyan/.jupyter/jupyter_notebook_config.py
       - ./scripts/jupyter_startup.sh:/usr/local/bin/jupyter_startup.sh
       - ./scripts/auto_save_extension.py:/home/jovyan/.jupyter/custom/auto_save_extension.py
-      - ./scripts/pyspark_config.py:/home/jovyan/work/pyspark_config.py
+      - ./notebooks/pyspark_config.py:/home/jovyan/work/pyspark_config.py
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - SPARK_MASTER=spark://spark-master:7077
@@ -69,7 +68,7 @@ services:
     networks:
       - spark-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD", "pgrep", "-f", "org.apache.spark.deploy.master.Master"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -107,7 +106,7 @@ services:
     networks:
       - spark-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      test: ["CMD", "pgrep", "-f", "org.apache.spark.deploy.worker.Worker"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -145,7 +144,7 @@ services:
     networks:
       - spark-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      test: ["CMD", "pgrep", "-f", "org.apache.spark.deploy.worker.Worker"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -161,6 +160,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
     networks:
       - spark-network
     profiles:
@@ -184,6 +186,8 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
+    volumes:
+      - kafka-data:/var/lib/kafka/data
     depends_on:
       - zookeeper
     networks:
@@ -233,6 +237,12 @@ volumes:
   spark-work:
     driver: local
   elasticsearch-data:
+    driver: local
+  kafka-data:
+    driver: local
+  zookeeper-data:
+    driver: local
+  zookeeper-logs:
     driver: local
 
 networks:

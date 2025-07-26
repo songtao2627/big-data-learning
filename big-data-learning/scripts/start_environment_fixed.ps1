@@ -1,4 +1,5 @@
 # 大数据学习平台环境启动脚本
+
 param(
     [switch]$Streaming,
     [switch]$Analytics,
@@ -39,32 +40,11 @@ if ($Force) {
     Write-Host "✓ 现有容器已停止" -ForegroundColor Green
 }
 
-# 构建启动命令
-$composeArgs = @("up", "-d")
-$profiles = @()
-
-if ($Streaming -or $All) {
-    $profiles += "streaming"
-    Write-Host "启用流处理组件 (Kafka, Zookeeper)" -ForegroundColor Cyan
-}
-
-if ($Analytics -or $All) {
-    $profiles += "analytics"
-    Write-Host "启用分析组件 (Elasticsearch, Kibana)" -ForegroundColor Cyan
-}
-
-if ($profiles.Count -gt 0) {
-    $profileString = $profiles -join ","
-    $composeArgs += "--profile"
-    $composeArgs += $profileString
-}
-
 # 启动Docker Compose环境
 Write-Host "`n正在启动Docker容器..." -ForegroundColor Yellow
-Write-Host "执行命令: docker-compose $($composeArgs -join ' ')" -ForegroundColor Gray
 
 try {
-    & docker-compose @composeArgs
+    docker-compose up -d
     if ($LASTEXITCODE -ne 0) {
         Write-Host "错误: 启动Docker Compose环境失败" -ForegroundColor Red
         exit 1
@@ -77,12 +57,7 @@ try {
 
 # 等待容器启动
 Write-Host "`n等待容器启动完成..." -ForegroundColor Yellow
-$waitTime = 60
-for ($i = $waitTime; $i -gt 0; $i--) {
-    Write-Progress -Activity "等待服务启动" -Status "剩余时间: $i 秒" -PercentComplete ((($waitTime - $i) / $waitTime) * 100)
-    Start-Sleep -Seconds 1
-}
-Write-Progress -Activity "等待服务启动" -Completed
+Start-Sleep -Seconds 30
 
 # 获取Jupyter Notebook的访问令牌
 Write-Host "`n正在获取Jupyter Notebook访问信息..." -ForegroundColor Yellow
@@ -93,10 +68,11 @@ try {
     
     while ($retryCount -lt $maxRetries -and -not $token) {
         $logs = docker logs jupyter-notebook 2>&1
-        $tokenMatch = $logs | Select-String -Pattern "token=([a-z0-9]+)" -AllMatches
+        $tokenPattern = "token=([a-f0-9]+)"
+        $tokenMatch = $logs | Select-String -Pattern $tokenPattern
         
-        if ($tokenMatch.Matches.Count -gt 0) {
-            $token = $tokenMatch.Matches[-1].Groups[1].Value
+        if ($tokenMatch) {
+            $token = $tokenMatch.Matches[0].Groups[1].Value
             break
         }
         
@@ -132,18 +108,6 @@ try {
     Write-Host "✗ 获取Jupyter日志时出错: $_" -ForegroundColor Red
 }
 
-# 运行健康检查
-Write-Host "`n正在运行环境健康检查..." -ForegroundColor Yellow
-try {
-    $healthArgs = @()
-    if ($Streaming -or $All) { $healthArgs += "-Streaming" }
-    if ($Analytics -or $All) { $healthArgs += "-Analytics" }
-    
-    & "$projectRoot\scripts\health_check.ps1" @healthArgs
-} catch {
-    Write-Host "✗ 健康检查脚本执行失败: $_" -ForegroundColor Red
-}
-
 Write-Host "`n===========================================" -ForegroundColor Cyan
 Write-Host "    环境启动完成!" -ForegroundColor Green
 Write-Host "===========================================" -ForegroundColor Cyan
@@ -153,15 +117,6 @@ Write-Host "• Jupyter Notebook: http://localhost:8888" -ForegroundColor Cyan
 Write-Host "• Spark Master UI: http://localhost:8080" -ForegroundColor Cyan
 Write-Host "• Spark Worker 1 UI: http://localhost:8081" -ForegroundColor Cyan
 Write-Host "• Spark Worker 2 UI: http://localhost:8082" -ForegroundColor Cyan
-
-if ($Streaming -or $All) {
-    Write-Host "• Kafka (端口 9092)" -ForegroundColor Cyan
-}
-
-if ($Analytics -or $All) {
-    Write-Host "• Elasticsearch: http://localhost:9200" -ForegroundColor Cyan
-    Write-Host "• Kibana: http://localhost:5601" -ForegroundColor Cyan
-}
 
 Write-Host "`n常用命令:" -ForegroundColor White
 Write-Host "• 停止环境: docker-compose down" -ForegroundColor Gray

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Smart Commit Assistant",
+  "description": "Analyzes changes and helps create meaningful commit messages with proper staging",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请帮助我进行智能提交操作：\n\n1. 分析当前所有未暂存的更改\n2. 根据更改内容和文件类型，建议哪些文件应该一起提交\n3. 生成有意义的中文提交信息，遵循以下格式：\n   - feat: 新功能\n   - fix: 修复问题\n   - docs: 文档更新\n   - style: 代码格式调整\n   - refactor: 代码重构\n   - test: 测试相关\n   - chore: 其他杂项\n\n4. 执行 git add 暂存相关文件\n5. 使用生成的提交信息执行 git commit\n6. 如果合适，建议是否推送到远程仓库\n\n请确保提交信息准确描述了更改内容，并且只提交应该版本控制的文件。"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Git Sync Manager",
+  "description": "Manages synchronization with remote repositories including fetch, pull, and push operations",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请帮助管理与远程仓库的同步：\n\n**远程仓库状态检查：**\n1. 检查配置的远程仓库\n2. 获取远程分支信息\n3. 比较本地与远程的差异\n4. 检查网络连接状态\n\n**同步操作选项：**\n1. **Fetch**: 获取远程更新但不合并\n2. **Pull**: 拉取并合并远程更改\n3. **Push**: 推送本地提交到远程\n4. **Force Push**: 强制推送（谨慎使用）\n\n**冲突处理：**\n1. 检测潜在的合并冲突\n2. 提供冲突解决策略\n3. 建议安全的同步方式\n4. 备份重要更改\n\n**分支同步：**\n1. 同步主分支\n2. 更新功能分支\n3. 清理远程跟踪分支\n4. 处理分支重命名\n\n**安全检查：**\n1. 确认工作区干净\n2. 检查是否有未提交的更改\n3. 验证推送权限\n4. 确认目标分支正确\n\n**操作建议：**\n- 推送前先拉取最新更改\n- 重要更改前创建备份分支\n- 使用 rebase 保持提交历史整洁\n- 定期同步避免大量冲突\n\n请告诉我需要执行什么同步操作，我会提供安全的操作指导。"
+  }
+}

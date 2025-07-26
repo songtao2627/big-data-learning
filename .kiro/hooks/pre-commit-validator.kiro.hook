@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Pre-commit Validator",
+  "description": "Validates code quality and runs checks before committing changes",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "在提交代码前，请执行以下验证检查：\n\n**代码质量检查：**\n1. 检查 Python 代码语法错误\n2. 验证 Jupyter notebook 是否可以正常运行\n3. 检查 PowerShell 脚本语法\n4. 验证 YAML/JSON 文件格式\n5. 检查 Markdown 文档格式\n\n**项目特定检查：**\n1. 确保 Docker 配置文件正确\n2. 验证 Spark 配置文件\n3. 检查数据文件路径引用\n4. 确认学习材料的完整性\n\n**安全检查：**\n1. 确保没有硬编码的敏感信息\n2. 检查是否包含不应提交的临时文件\n3. 验证 .gitignore 规则是否正确应用\n\n**测试运行：**\n1. 如果存在测试文件，运行基本测试\n2. 验证关键脚本的基本功能\n\n只有在所有检查通过后，才建议继续提交。如果发现问题，请提供具体的修复建议。"
+  }
+}

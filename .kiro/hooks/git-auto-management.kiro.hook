@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "name": "Git Auto Management",
+  "description": "Automatically handles git operations like staging, committing, and status checking when project files are modified",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.py",
+      "**/*.ipynb",
+      "**/*.md",
+      "**/*.yml",
+      "**/*.yaml",
+      "**/*.ps1",
+      "**/*.sh",
+      "**/*.conf",
+      "**/*.json",
+      "**/*.csv",
+      "**/*.txt",
+      "docker-compose.yml",
+      ".gitignore"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Files have been modified in the big data learning platform project. Please help manage git operations by:\n\n1. Checking the current git status to see what files have changed\n2. Reviewing the changes to ensure they are appropriate for committing\n3. Staging the relevant files using `git add`\n4. Creating a meaningful commit message in Chinese that describes the changes\n5. Committing the changes using `git commit`\n6. If appropriate, suggest pushing to remote repository\n\nFocus on:\n- Creating descriptive commit messages in Chinese\n- Only committing files that should be version controlled (exclude temporary files, logs, etc.)\n- Grouping related changes into logical commits\n- Following the project's git workflow and standards\n\nThe project is a Docker-based big data learning platform with Spark, Jupyter notebooks, and various learning materials."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Branch Manager",
+  "description": "Helps manage git branches including creation, switching, and cleanup",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请帮助我管理 Git 分支：\n\n**当前分支信息：**\n1. 显示当前分支名称\n2. 列出所有本地分支\n3. 显示远程分支\n4. 检查分支间的关系和同步状态\n\n**分支操作选项：**\n1. 创建新分支（功能分支、修复分支等）\n2. 切换到指定分支\n3. 合并分支\n4. 删除不需要的分支\n5. 推送分支到远程\n6. 从远程拉取分支更新\n\n**分支命名规范：**\n- feature/功能名称 - 新功能开发\n- fix/问题描述 - 问题修复\n- hotfix/紧急修复 - 紧急修复\n- docs/文档更新 - 文档相关\n\n请询问我需要执行什么分支操作，并提供安全的操作指导。"
+  }
+}

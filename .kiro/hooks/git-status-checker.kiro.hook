@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Git Status Checker",
+  "description": "Automatically checks git status and provides repository insights when files are modified",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["**/*.py", "**/*.ipynb", "**/*.md", "**/*.yml", "**/*.yaml", "**/*.ps1", "**/*.sh", "**/*.conf", "**/*.json"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "文件已被修改，请检查 Git 仓库状态并提供以下信息：\n\n1. 当前分支名称和状态\n2. 未暂存的更改列表\n3. 已暂存但未提交的更改\n4. 未跟踪的新文件\n5. 与远程分支的同步状态\n6. 建议的下一步操作\n\n请使用中文提供清晰的状态报告，并根据更改内容给出合适的 Git 操作建议。"
+  }
+}

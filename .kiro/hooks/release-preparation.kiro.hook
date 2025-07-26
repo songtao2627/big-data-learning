@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Release Preparation",
+  "description": "Automates release preparation including version updates and changelog generation",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请帮助准备新版本发布：\n\n**版本信息检查：**\n1. 检查当前版本号（从 pyproject.toml、package.json 等文件）\n2. 分析自上次发布以来的更改类型\n3. 建议新版本号（major.minor.patch）\n4. 确认版本号符合语义化版本规范\n\n**发布准备步骤：**\n1. 更新版本号文件\n2. 生成或更新 CHANGELOG.md\n3. 检查所有文档是否最新\n4. 验证项目完整性\n5. 运行完整测试套件\n\n**变更日志生成：**\n1. 分析提交历史\n2. 按类型分组更改（新功能、修复、改进等）\n3. 生成用户友好的中文发布说明\n4. 标注重要的破坏性更改\n5. 添加升级指导\n\n**Git 操作：**\n1. 创建发布提交\n2. 创建版本标签\n3. 推送到远程仓库\n4. 创建发布分支（如需要）\n\n**发布类型：**\n- patch: 修复问题，向后兼容\n- minor: 新功能，向后兼容\n- major: 重大更改，可能不向后兼容\n\n请询问发布类型并指导完整的发布流程。"
+  }
+}
