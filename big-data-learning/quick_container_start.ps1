@@ -98,8 +98,10 @@ Write-Host "  停止环境:    docker-compose down" -ForegroundColor Yellow
 Write-Host "  强制重新构建所有镜像：  docker-compose build --no-cache" -ForegroundColor Yellow
 Write-Host "  重新构建特定服务：  docker-compose build --no-cache spark-dev" -ForegroundColor Yellow
 Write-Host "  构建并启动：    docker-compose up --build" -ForegroundColor Yellow
+Write-Host "  停止所有服务:  docker-compose stop" -ForegroundColor Yellow
 Write-Host "  停止特定服务:  docker-compose stop <service_name>" -ForegroundColor Yellow
-Write-Host "  启动已停止的服务:  docker-compose start <service_name>" -ForegroundColor Yellow
+Write-Host "  启动所有已停止的服务:  docker-compose start" -ForegroundColor Yellow
+Write-Host "  启动特定已停止的服务:  docker-compose start <service_name>" -ForegroundColor Yellow
 
 # 显示日志 (如果需要)
 if ($Logs) {
