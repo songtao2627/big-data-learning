@@ -1,0 +1,128 @@
+# 基于 Bitnami Spark 镜像构建开发环境
+FROM bitnami/spark:3.4
+
+# 切换到 root 用户进行安装
+USER root
+
+# 配置国内软件源加速
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    vim \
+    git \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# 配置 pip 国内源（全局配置）
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 安装 Python 包（使用 root 用户安装到系统）
+RUN pip3 install --no-cache-dir \
+    jupyter \
+    jupyterlab \
+    pandas \
+    matplotlib \
+    seaborn \
+    plotly \
+    numpy \
+    scipy \
+    scikit-learn \
+    requests \
+    beautifulsoup4 \
+    py4j==0.10.9.7 \
+    findspark
+
+# 切换回 spark 用户
+USER 1001
+
+# 设置工作目录
+WORKDIR /opt/bitnami/spark
+
+# 创建必要的目录
+RUN mkdir -p /opt/bitnami/spark/notebooks && \
+    ls -la /opt/bitnami/spark/notebooks
+
+# 切换回 root 用户创建文件
+USER root
+
+# 创建 PySpark 初始化文件（使用 heredoc 语法）
+RUN cat << 'EOF' > /opt/bitnami/spark/notebooks/pyspark_init.py
+from pyspark.sql import SparkSession
+
+def create_spark_session(app_name="SparkLearning"):
+    spark = SparkSession.builder \
+        .appName(app_name) \
+        .master("spark://spark-master:7077") \
+        .config("spark.executor.memory", "1g") \
+        .config("spark.driver.memory", "1g") \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel("WARN")
+    return spark
+
+# 自动创建 Spark 会话
+print("正在初始化 Spark 会话...")
+try:
+    spark = create_spark_session()
+    print("✅ Spark 会话创建成功！")
+    print(f"Spark 版本: {spark.version}")
+    print(f"Master URL: {spark.sparkContext.master}")
+except Exception as e:
+    print(f"❌ Spark 会话创建失败: {e}")
+    print("请检查 Spark 集群是否正常运行")
+EOF
+
+# 设置 Jupyter 启动脚本（使用 heredoc 语法）
+RUN cat << 'EOF' > /opt/bitnami/spark/start-jupyter.sh
+#!/bin/bash
+echo "🚀 启动 Jupyter Lab..."
+jupyter lab \
+    --ip=0.0.0.0 \
+    --port=8888 \
+    --no-browser \
+    --allow-root \
+    --notebook-dir=/opt/bitnami/spark/notebooks \
+    --ServerApp.token=spark-learning \
+    --ServerApp.password="" \
+    --ServerApp.disable_check_xsrf=True \
+    --ServerApp.allow_origin="*" \
+    --ServerApp.terminals_enabled=True
+EOF
+
+# 确保脚本有正确的Unix换行符和执行权限
+RUN sed -i 's/\r$//' /opt/bitnami/spark/start-jupyter.sh && \
+    chmod +x /opt/bitnami/spark/start-jupyter.sh
+
+# 添加更详细的检查步骤
+RUN if [ ! -f /opt/bitnami/spark/start-jupyter.sh ]; then \
+        echo "Error: start-jupyter.sh not found"; \
+        exit 1; \
+    else \
+        echo "start-jupyter.sh found"; \
+        echo "Script content:"; \
+        cat /opt/bitnami/spark/start-jupyter.sh; \
+        echo "File format check:"; \
+        file /opt/bitnami/spark/start-jupyter.sh || echo "file command not available"; \
+    fi && \
+    if [ ! -d /opt/bitnami/spark/notebooks ]; then \
+        echo "Error: notebooks directory not found"; \
+        exit 1; \
+    else \
+        echo "notebooks directory found"; \
+    fi
+
+# 修改文件所有权
+RUN chown -R 1001:1001 /opt/bitnami/spark/notebooks /opt/bitnami/spark/start-jupyter.sh
+
+# 切换回 spark 用户
+USER 1001
+
+# 暴露端口
+EXPOSE 8888 4040 4041
+
+# 设置启动命令
+CMD ["/opt/bitnami/spark/start-jupyter.sh"]
