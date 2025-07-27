@@ -1,0 +1,48 @@
+# Git 相关
+.git
+.gitignore
+
+# IDE 相关
+.vscode
+.idea
+*.swp
+*.swo
+
+# Python 相关
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+
+# Jupyter 相关
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 大数据文件
+data/large/
+data/medium/
+*.parquet
+*.csv.gz
+
+# 文档
+*.md
+README*
+CHANGELOG*
+
+# 其他
+node_modules/
+.env
+.env.local

@@ -24,7 +24,8 @@ services:
       - spark-logs:/opt/bitnami/spark/logs
       - spark-work:/opt/bitnami/spark/work
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.10
     healthcheck:
       test: ["CMD", "pgrep", "-f", "org.apache.spark.deploy.master.Master"]
       interval: 30s
@@ -62,7 +63,8 @@ services:
       spark-master:
         condition: service_healthy
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.11
     healthcheck:
       test: ["CMD", "pgrep", "-f", "org.apache.spark.deploy.worker.Worker"]
       interval: 30s
@@ -100,7 +102,8 @@ services:
       spark-master:
         condition: service_healthy
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.12
     healthcheck:
       test: ["CMD", "pgrep", "-f", "org.apache.spark.deploy.worker.Worker"]
       interval: 30s
@@ -109,10 +112,56 @@ services:
       start_period: 45s
     restart: unless-stopped
 
+  # Spark 开发环境容器 - 用于代码开发和任务提交
+  spark-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark-dev
+    image: spark-dev:latest
+    container_name: spark-dev
+    hostname: spark-dev
+    ports:
+      - "8888:8888"  # Jupyter Notebook
+      - "4040:4040"  # Spark Application UI
+      - "4041:4041"  # Additional Spark Application UI
+    environment:
+      - SPARK_MODE=client
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      - PYSPARK_PYTHON=python3
+      - PYSPARK_DRIVER_PYTHON=python3
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=spark-learning
+    volumes:
+      - ./data:/opt/bitnami/spark/data
+      - ./notebooks:/opt/bitnami/spark/notebooks
+      - ./scripts:/opt/bitnami/spark/scripts
+      - ./scripts/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+      - spark-logs:/opt/bitnami/spark/logs
+    working_dir: /opt/bitnami/spark
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    networks:
+      spark-network:
+        ipv4_address: 172.20.0.20
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/lab"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
   # 可选：添加Kafka用于流处理学习
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper
+    hostname: zookeeper
     ports:
       - "2181:2181"
     environment:
@@ -122,7 +171,8 @@ services:
       - zookeeper-data:/var/lib/zookeeper/data
       - zookeeper-logs:/var/lib/zookeeper/log
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.30
     profiles:
       - streaming
     restart: unless-stopped
@@ -130,6 +180,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
       - "9101:9101"
@@ -149,7 +200,8 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.31
     profiles:
       - streaming
     restart: unless-stopped
@@ -158,6 +210,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
     container_name: elasticsearch
+    hostname: elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -168,7 +221,8 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.40
     profiles:
       - analytics
     restart: unless-stopped
@@ -177,6 +231,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.8.0
     container_name: kibana
+    hostname: kibana
     ports:
       - "5601:5601"
     environment:
@@ -184,7 +239,8 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.20.0.41
     profiles:
       - analytics
     restart: unless-stopped
@@ -206,6 +262,12 @@ volumes:
 networks:
   spark-network:
     driver: bridge
+    name: spark-learning-network
     ipam:
+      driver: default
       config:
         - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+    driver_opts:
+      com.docker.network.bridge.name: spark-br0
+      com.docker.network.driver.mtu: 1500

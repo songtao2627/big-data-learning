@@ -1,54 +1,56 @@
 # 大数据学习平台
 
-基于Docker的Apache Spark和Flink学习环境，专为中文用户设计的大数据技术教学平台。
+基于 Docker 的 Apache Spark 学习环境，专为中文用户设计。
 
-## 项目概述
+## 🎯 项目特色
 
-这是一个完整的大数据学习项目，包含：
-- 🐳 Docker化的Spark集群环境
-- 📚 结构化的Spark学习教程
-- 🔄 Flink流处理学习模块
-- 🤖 智能化的Git管理Hook
-- 📊 实践项目和真实数据集
+✅ **容器化开发** - 零配置，开箱即用  
+✅ **中文友好** - 完整的中文教程和文档  
+✅ **实战导向** - 包含真实项目案例  
+✅ **国内优化** - 配置国内镜像源，下载快速  
 
-## 快速开始
+## 🚀 快速开始
 
 ```bash
-# 克隆项目
+# 1. 克隆项目
 git clone <repository-url>
-cd big-data-learning-platform
 
-# 启动Docker环境
-docker-compose up -d
+# 2. 进入主目录
+cd big-data-learning
 
-# 访问Jupyter Notebook
-# http://localhost:8888
+# 3. 一键启动
+.\quick_container_start.ps1 -Test
 ```
 
-## 学习路径
+## 📚 学习内容
 
-1. **环境搭建** - Docker环境配置和验证
-2. **Spark基础** - RDD、DataFrame、Dataset
-3. **Spark SQL** - 结构化数据处理
-4. **Spark Streaming** - 实时数据处理
-5. **实践项目** - 真实数据集分析
-6. **Flink入门** - 流处理对比学习
+- **Spark 基础** - RDD、DataFrame、Dataset API
+- **Spark SQL** - 数据查询和分析优化
+- **流处理** - 实时数据处理技术
+- **实战项目** - 推荐系统、日志分析、实时仪表板
 
-## 自动化功能
+## 📁 项目结构
 
-项目包含多个智能Hook，自动处理：
-- 📝 学习进度跟踪
-- 💾 代码自动提交
-- 📊 性能监控报告
-- 🔄 GitHub同步
+```
+├── big-data-learning/           # 主学习平台
+│   ├── notebooks/              # 教程和示例
+│   ├── data/                   # 数据集
+│   ├── scripts/                # 管理脚本
+│   └── docker-compose.yml      # 容器编排
+└── .kiro/                      # AI 助手配置
+```
 
-## 技术栈
+## 🛠️ 技术栈
 
-- Apache Spark 3.x
-- Apache Flink 1.x
-- Docker & Docker Compose
-- Jupyter Notebook
-- Python/Scala
+- **Apache Spark 3.4** - 分布式计算框架
+- **Jupyter Lab** - 交互式开发环境
+- **Docker** - 容器化部署
+- **Python** - 主要编程语言
 
----
-*本项目使用Kiro AI助手的自动化Hook管理版本控制*
+## 📖 详细文档
+
+- **[快速上手指南](big-data-learning/GETTING_STARTED.md)** - 一分钟快速开始 ⭐
+- **[容器开发指南](big-data-learning/CONTAINER_DEV_GUIDE.md)** - 完整使用说明
+- **[学习路径规划](big-data-learning/notebooks/learning_path.md)** - 结构化学习计划
+
+现在就开始你的大数据学习之旅吧！🚀
