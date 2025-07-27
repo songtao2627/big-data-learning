@@ -14,6 +14,10 @@ export PYSPARK_PYTHON=/opt/conda/bin/python
 export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 export PYSPARK_DRIVER_PYTHON_OPTS="notebook"
 
+# 确保Python命令在PATH中可用
+echo "修复Python环境变量..."
+export PATH="/opt/conda/bin:$PATH"
+
 # 创建工作目录
 mkdir -p /home/jovyan/work/custom
 mkdir -p /home/jovyan/work/examples
@@ -209,6 +213,7 @@ echo "🚀 正在启动Jupyter Lab..."
 # 确保环境变量在 Jupyter 进程中可用
 export SPARK_HOME=/usr/local/spark
 export PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
+export PATH="/opt/conda/bin:$PATH"
 
 exec /opt/conda/bin/jupyter lab \
     --NotebookApp.token='' \

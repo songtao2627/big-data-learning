@@ -4,7 +4,7 @@
   "description": "Automatically handles git operations like staging, committing, and status checking when project files are modified",
   "version": "1",
   "when": {
-    "type": "fileEdited",
+    "type": "userTriggered",
     "patterns": [
       "**/*.py",
       "**/*.ipynb",

@@ -1,5 +1,10 @@
 # 本地大数据学习环境设置脚本
 
+# 添加参数支持选择pip镜像源
+param(
+    [string]$Mirror = "tsinghua"  # 默认使用清华镜像源
+)
+
 Write-Host "===========================================" -ForegroundColor Cyan
 Write-Host "    设置本地大数据学习环境" -ForegroundColor Cyan
 Write-Host "===========================================" -ForegroundColor Cyan
@@ -23,6 +28,64 @@ try {
 } catch {
     Write-Host "✗ 未找到pip" -ForegroundColor Red
     exit 1
+}
+
+# 根据参数设置pip镜像源
+Write-Host "`n配置pip镜像源..." -ForegroundColor Yellow
+$mirrorUrl = ""
+$trustedHost = ""
+
+switch ($Mirror) {
+    "tsinghua" {
+        $mirrorUrl = "https://pypi.tuna.tsinghua.edu.cn/simple"
+        $trustedHost = "pypi.tuna.tsinghua.edu.cn"
+        Write-Host "使用清华大学镜像源" -ForegroundColor Green
+    }
+    "aliyun" {
+        $mirrorUrl = "https://mirrors.aliyun.com/pypi/simple/"
+        $trustedHost = "mirrors.aliyun.com"
+        Write-Host "使用阿里云镜像源" -ForegroundColor Green
+    }
+    "douban" {
+        $mirrorUrl = "https://pypi.douban.com/simple/"
+        $trustedHost = "pypi.douban.com"
+        Write-Host "使用豆瓣镜像源" -ForegroundColor Green
+    }
+    "default" {
+        Write-Host "使用默认PyPI源" -ForegroundColor Yellow
+    }
+    default {
+        $mirrorUrl = "https://pypi.tuna.tsinghua.edu.cn/simple"
+        $trustedHost = "pypi.tuna.tsinghua.edu.cn"
+        Write-Host "使用清华大学镜像源（默认）" -ForegroundColor Green
+    }
+}
+
+# 配置pip镜像源
+if ($Mirror -ne "default") {
+    $pipConf = @"
+[global]
+index-url = $mirrorUrl
+trusted-host = $trustedHost
+timeout = 120
+"@
+    
+    if ($IsWindows) {
+        $pipDir = "$env:APPDATA\pip"
+        if (!(Test-Path $pipDir)) {
+            New-Item -ItemType Directory -Path $pipDir | Out-Null
+        }
+        $pipConf | Out-File -FilePath "$pipDir\pip.ini" -Encoding UTF8
+    } else {
+        $homeDir = [Environment]::GetFolderPath("UserProfile")
+        if (!$homeDir) { $homeDir = $env:HOME }
+        $pipDir = "$homeDir/.pip"
+        if (!(Test-Path $pipDir)) {
+            New-Item -ItemType Directory -Path $pipDir | Out-Null
+        }
+        $pipConf | Out-File -FilePath "$pipDir/pip.conf" -Encoding UTF8
+    }
+    Write-Host "✓ pip镜像源配置完成" -ForegroundColor Green
 }
 
 # 创建虚拟环境

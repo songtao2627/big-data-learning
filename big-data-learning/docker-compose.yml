@@ -1,49 +1,5 @@
 
 services:
-  jupyter:
-    image: jupyter/pyspark-notebook:python-3.11
-    container_name: jupyter-notebook
-    ports:
-      - "8888:8888"
-      - "4040-4050:4040-4050"  # Spark UI端口范围
-    volumes:
-      - ./notebooks:/home/jovyan/work
-      - ./data:/home/jovyan/data
-      - ./scripts/jupyter_notebook_config.py:/home/jovyan/.jupyter/jupyter_notebook_config.py
-      - ./scripts/jupyter_startup.sh:/usr/local/bin/jupyter_startup.sh
-      - ./scripts/auto_save_extension.py:/home/jovyan/.jupyter/custom/auto_save_extension.py
-      - ./notebooks/pyspark_config.py:/home/jovyan/work/pyspark_config.py
-    environment:
-      - JUPYTER_ENABLE_LAB=yes
-      - SPARK_HOME=/usr/local/spark
-      - SPARK_MASTER=spark://spark-master:7077
-      - PYSPARK_SUBMIT_ARGS=--master spark://spark-master:7077 --conf spark.sql.adaptive.enabled=true --conf spark.sql.adaptive.coalescePartitions.enabled=true pyspark-shell
-      - PYTHONPATH=/usr/local/spark/python:/home/jovyan/work
-      - PYSPARK_PYTHON=/opt/conda/bin/python
-      - PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
-      - SPARK_DRIVER_MEMORY=1g
-      - SPARK_EXECUTOR_MEMORY=1g
-      - SPARK_DRIVER_MAX_RESULT_SIZE=1g
-      - JAVA_OPTS=-Xmx1g -Xms512m
-      - PYSPARK_DRIVER_PYTHON_OPTS=notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
-    user: root
-    command: >
-      bash -c "chmod +x /usr/local/bin/jupyter_startup.sh &&
-               chown -R jovyan:users /home/jovyan &&
-               su jovyan -c '/usr/local/bin/jupyter_startup.sh'"
-    networks:
-      - spark-network
-    depends_on:
-      spark-master:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    restart: unless-stopped
-
   spark-master:
     image: bitnami/spark:3.4
     container_name: spark-master
